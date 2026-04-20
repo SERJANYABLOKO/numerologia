@@ -6,7 +6,5 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY numerology_bot.py .
-COPY bot.py .
-COPY group_utils.py .
 
 CMD ["python", "numerology_bot.py"]
