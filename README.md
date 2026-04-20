@@ -1,0 +1,2 @@
+# numerologia
+numerolog tg bot
