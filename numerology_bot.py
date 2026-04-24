@@ -6,6 +6,43 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 from aiohttp import web
 
+# Добавь эту функцию в начало файла, после импортов
+async def health_check_server():
+    """Простой сервер для health check Render"""
+    from aiohttp import web
+    
+    async def health_handler(request):
+        return web.Response(text="OK")
+    
+    app = web.Application()
+    app.router.add_get('/health', health_handler)
+    app.router.add_get('/', health_handler)
+    
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', PORT)
+    await site.start()
+    logger.info(f"✅ Health check сервер запущен на порту {PORT}")
+    
+    # Держим сервер активным
+    while True:
+        await asyncio.sleep(3600)
+
+# А в main() замени polling часть на это:
+    else:
+        logger.warning("⚠️ WEBHOOK_URL не указан, используем polling режим")
+        
+        # Запускаем health check сервер в фоне
+        asyncio.create_task(health_check_server())
+        
+        await application.start()
+        await application.updater.start_polling()
+        logger.info("✅ Бот запущен в режиме polling")
+        
+        # Держим бота активным
+        while True:
+            await asyncio.sleep(1)
+
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
